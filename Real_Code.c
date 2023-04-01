@@ -346,10 +346,17 @@ void loop() {
     mode = 1;
     digitalWrite(LEDR, LOW);
     digitalWrite(LEDG, LOW);
+    delay(100);
+    digitalWrite(LEDR,HIGH);
+    digitalWrite(LEDG,HIGH);
     digitalWrite(LEDY, HIGH);
     delay(100);
+    digitalWrite(LEDR, LOW);
+    digitalWrite(LEDG, LOW);
     digitalWrite(LEDY, LOW);
     delay(100);
+    digitalWrite(LEDR,HIGH);
+    digitalWrite(LEDG,HIGH);
     digitalWrite(LEDY, HIGH);
   }
   switch (mode) {
@@ -365,6 +372,8 @@ void loop() {
       break;
     case 1:
       extra();
+      digitalWrite(LEDR, LOW);
+      digitalWrite(LEDG, LOW);
       digitalWrite(LEDY, LOW);
       pooh = false;
       mok = false;
