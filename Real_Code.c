@@ -9,39 +9,63 @@
 #define LEDG 5
 #define LEDY 6
 
-volatile bool pooh = false;
-volatile bool mok = false;
+
 volatile int present1 = 0;
 volatile int present2 = 0;
 const int debounce = 50;
+volatile int check[6] = {0, 0, 0, 0, 0, 0};
+const int v[6] = {1, 1, 2, 2, 1, 2};
+volatile int order = 0;
 
 LedControl lc = LedControl(DIN, CLK, CS, 0);
 
 void wow() {
   if (millis() - present1 > debounce) {
     if (digitalRead(BTN_1) == LOW) {
-      pooh = !pooh;
+      if (order > 6) {
+        order = 0;
+        for (int i = 0; i < 6; i++) {
+          check[i] = 0;
+        }
+      }
+      check[order] = 1;
+      if (check[order] == v[order]) {
+        digitalWrite(LEDG, HIGH);
+        delay(1000);
+        digitalWrite(LEDG, LOW);
+      }
+      else {
+        digitalWrite(LEDR, HIGH);
+        delay(1000);
+        digitalWrite(LEDR, LOW);
+      }
+      order++;
     }
-    if (pooh == true) {
-      digitalWrite(LEDR, HIGH);
-    } else {
-      digitalWrite(LEDR, LOW);
-    }
-    present1 = millis();
   }
 }
 
 void omg() {
   if (millis() - present2 > debounce) {
     if (digitalRead(BTN_2) == LOW) {
-      mok = !mok;
+      if (order > 6) {
+        order = 0;
+        for (int i = 0; i < 6; i++) {
+          check[i] = 0;
+        }
+      }
+      check[order] = 2;
+      if (check[order] == v[order]) {
+        digitalWrite(LEDG, HIGH);
+        delay(1000);
+        digitalWrite(LEDG, LOW);
+      }
+      else {
+        digitalWrite(LEDR, HIGH);
+        delay(1000);
+        digitalWrite(LEDR, LOW);
+      }
+      order++;
     }
-    if (mok == true) {
-      digitalWrite(LEDG, HIGH);
-    } else {
-      digitalWrite(LEDG, LOW);
-    }
-    present2 = millis();
   }
 }
 
@@ -336,48 +360,44 @@ void setup() {
   lc.shutdown(0, false);
   lc.setIntensity(0, 8);
   lc.clearDisplay(0);
-  //test();
-
 }
 
 void loop() {
-  int mode = 0;
-  if (pooh == true && mok == true) {
-    mode = 1;
+  if (check[0] == 1 && check[1] == 1 && check[2] == 2 && check[3] == 2 && check[4] == 1 && check[5] == 2 && order == 6) {
     digitalWrite(LEDR, LOW);
     digitalWrite(LEDG, LOW);
     delay(100);
-    digitalWrite(LEDR,HIGH);
-    digitalWrite(LEDG,HIGH);
+    digitalWrite(LEDR, HIGH);
+    digitalWrite(LEDG, HIGH);
     digitalWrite(LEDY, HIGH);
     delay(100);
     digitalWrite(LEDR, LOW);
     digitalWrite(LEDG, LOW);
     digitalWrite(LEDY, LOW);
     delay(100);
-    digitalWrite(LEDR,HIGH);
-    digitalWrite(LEDG,HIGH);
+    digitalWrite(LEDR, HIGH);
+    digitalWrite(LEDG, HIGH);
     digitalWrite(LEDY, HIGH);
+    extra();
+    for (int i = 0; i < 6; i++) {
+      check[i] = 0;
+    }
+    order = 0;
+    digitalWrite(LEDR, LOW);
+    digitalWrite(LEDG, LOW);
+    digitalWrite(LEDY, LOW);
+  } else {
+    for (int i = 0; i < 6; i++) {
+      check[i] = 0;
+    }
+    order = 0;
+    triangle();
+    delay(1000);
+    n();
+    delay(1000);
+    num();
+    delay(1000);
+    yolo();
+    delay(1000);
   }
-  switch (mode) {
-    case 0:
-      triangle();
-      delay(1000);
-      n();
-      delay(1000);
-      num();
-      delay(1000);
-      yolo();
-      delay(1000);
-      break;
-    case 1:
-      extra();
-      digitalWrite(LEDR, LOW);
-      digitalWrite(LEDG, LOW);
-      digitalWrite(LEDY, LOW);
-      pooh = false;
-      mok = false;
-      break;
-  }
-
 }
